@@ -413,6 +413,7 @@ a {
   margin-right: 15%;
   float: right;
   font-size: 15px;
+  display: flex;
 }
 .header-controls-and-search section {
   display: inline-block;
@@ -429,6 +430,17 @@ a {
 
 .header-controls a {
   color: #2b2b2b;
+}
+
+.header-counters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-counters a i {
+  color: #000;
+  font-size: 20px;
 }
 
 .header-search a {
@@ -539,6 +551,10 @@ imaginea. Imi strica alinierea si nu am reusit sa o remediez, asa ca am apelat
   font-size: 25px;
   display: inline-block;
   margin-left: 16px;
+}
+
+.product-tile-controls a.active {
+  font-size: 14px;
 }
 
 .product-tile-controls a i:hover {
