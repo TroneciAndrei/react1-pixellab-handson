@@ -1,3 +1,6 @@
+const ADD_TO_CART_EVENT = 'cart/productAdded';
+const REMOVE_FROM_CART_EVENT = 'cart/productRemoved';
+
 class NewsletterForm extends React.Component {
   state = {
     email: '',
@@ -84,3 +87,181 @@ class NewsletterForm extends React.Component {
 const newsletterContainer = document.querySelector('.home-newsletter');
 // React recipe?
 ReactDOM.render(<NewsletterForm></NewsletterForm>, newsletterContainer);
+
+class AddToCartButton extends React.Component {
+  state = {
+    added: false,
+  };
+
+  onClick = () => {
+    this.setState({
+      busy: true,
+    });
+
+    setTimeout(() => {
+      const eventName = this.state.added
+        ? REMOVE_FROM_CART_EVENT
+        : ADD_TO_CART_EVENT;
+
+      dispatchEvent(
+        new CustomEvent(eventName, {
+          detail: {
+            productId: this.props.productId,
+          },
+        }),
+      );
+
+      this.setState({
+        added: !this.state.added,
+        busy: false,
+      });
+    }, 2000);
+  };
+
+  // all components require a render
+  render() {
+    // render must retunr jsx
+    return (
+      <button
+        className={`product-control ${this.state.added ? 'active' : ''}`}
+        onClick={this.onClick}
+        type="button"
+        title={this.state.added === true ? 'Remove from cart' : 'Add to Cart'}
+        disabled={this.state.busy}
+      >
+        {this.state.added === true
+          ? `PID: ${this.props.productId} in cart`
+          : 'Add to Cart'}
+        {this.state.busy ? <i className="fas fa-spinner"></i> : ''}
+      </button>
+    );
+  }
+}
+
+// function react component
+const AddToWishlistButton = ({ productId }) => {
+  const state = React.useState({
+    added: false,
+    busy: false,
+  });
+  const actualState = state[0];
+  const setState = state[1];
+
+  const onClick = () => {
+    setState({
+      added: actualState.added,
+      busy: true,
+    });
+
+    setTimeout(() => {
+      // dispatch event
+
+      setState({
+        added: !actualState.added,
+        busy: false,
+      });
+    }, 500);
+  };
+
+  return (
+    <button
+      className={`product-control ${actualState.added ? 'active' : ''}`}
+      title={actualState.added ? 'Remove from Wishlist' : 'Add to Wishlist'}
+      type="button"
+      onClick={onClick}
+    >
+      {actualState.added === true
+        ? `PID: ${productId} in wishlist`
+        : 'Add to Wishlist'}
+      {actualState.busy ? <i className="fas fa-spinner"></i> : ''}
+    </button>
+  );
+};
+
+class ProductControls extends React.Component {
+  render() {
+    return [
+      <AddToCartButton
+        key="cart"
+        productId={this.props.productId}
+      ></AddToCartButton>,
+      <AddToWishlistButton
+        key="wl"
+        productId={this.props.productId}
+      ></AddToWishlistButton>,
+    ];
+  }
+}
+
+const productTileControls = document.querySelectorAll('.product-tile-controls');
+productTileControls.forEach((productTileControl, index) => {
+  ReactDOM.render(
+    <ProductControls productId={index}></ProductControls>,
+    productTileControl,
+  );
+});
+
+class HeaderCounters extends React.Component {
+  state = {
+    cartItemsCount: 0,
+    cartItems: [],
+  };
+
+  componentDidMount() {
+    addEventListener(ADD_TO_CART_EVENT, (event) => {
+      const productId = event.detail.productId;
+      // slice will clone the array
+      const cartItems = this.state.cartItems.slice();
+      cartItems.push(productId);
+
+      this.setState({
+        cartItemsCount: cartItems.length,
+        cartItems,
+      });
+    });
+
+    addEventListener(REMOVE_FROM_CART_EVENT, (event) => {
+      const productId = event.detail.productId;
+      const cartItems = this.state.cartItems.filter((cartItem) => {
+        return productId !== cartItem;
+      });
+
+      this.setState({
+        cartItemsCount: cartItems.length,
+        cartItems,
+      });
+    });
+  }
+
+  showProducts = () => {
+    let message = '';
+
+    if (this.state.cartItems.length <= 0) {
+      message = 'There are no products in your cart';
+    } else {
+      message = `These are the pids in your cart: ${this.state.cartItems}`;
+    }
+
+    alert(message);
+  };
+
+  render() {
+    return (
+      <>
+        <div className="header-counter" onClick={this.showProducts}>
+          <span className="qty">{this.state.cartItemsCount}</span>
+          <i className="fas fa-heart icon"></i>
+        </div>
+
+        <div className="header-counter" onClick={this.showProducts}>
+          <span className="qty">{this.state.cartItemsCount}</span>
+          <i className="fas fa-shopping-cart icon"></i>
+        </div>
+      </>
+    );
+  }
+}
+
+const headerCounters = document.querySelector('.header-counters');
+// the good way
+ReactDOM.createRoot(headerCounters).render(<HeaderCounters></HeaderCounters>);

@@ -311,16 +311,18 @@ a {
   margin-right: 10px;
 }
 
-.header-cart {
+.header-counter {
   position: relative;
   margin-top: 6px;
+  display: inline-block;
+  margin: 0 8px;
 }
 
-.header-cart .icon {
+.header-counter .icon {
   font-size: 30px;
 }
 
-.header-cart .cart-qty {
+.header-counter .qty {
   position: absolute;
   top: -6px;
   right: -5px;
@@ -533,7 +535,7 @@ a {
   font-weight: 500;
 }
 
-.product-tile .product-a2c {
+.product-tile .product-control {
   background-color: transparent;
   border: 1px solid #ff6b6b;
   padding: 10px 25px;
@@ -545,7 +547,8 @@ a {
   cursor: pointer;
 }
 
-.product-tile .product-a2c:hover {
+.product-tile .product-control:hover,
+.product-tile .product-control.active {
   color: #fff;
   background-color: #ff6b6b;
 }
