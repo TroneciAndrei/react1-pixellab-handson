@@ -79,7 +79,9 @@ const newsletterContainer = document.querySelector(
   '.footer-sign-up-newsletter',
 );
 // React recipe?
-ReactDOM.render(<NewsletterForm></NewsletterForm>, newsletterContainer);
+ReactDOM.createRoot(newsletterContainer).render(
+  <NewsletterForm></NewsletterForm>,
+);
 
 class AddToCartButton extends React.Component {
   state = {
@@ -193,9 +195,8 @@ class ProductControls extends React.Component {
 
 const productTileControls = document.querySelectorAll('.product-tile-controls');
 productTileControls.forEach((productTileControl, index) => {
-  ReactDOM.render(
+  ReactDOM.createRoot(productTileControl).render(
     <ProductControls productId={index}></ProductControls>,
-    productTileControl,
   );
 });
 
@@ -247,11 +248,11 @@ class HeaderCounters extends React.Component {
     return (
       <>
         <a href="http://" title="Saved Items" onClick={this.showProducts}>
-          {this.state.cartItemsCount} <i class="far fa-heart"></i>
+          {this.state.cartItemsCount} <i className="far fa-heart"></i>
         </a>
 
         <a href="http://" title="Cart" onClick={this.showProducts}>
-          {this.state.cartItemsCount} <i class="fas fa-shopping-bag"></i>
+          {this.state.cartItemsCount} <i className="fas fa-shopping-bag"></i>
         </a>
       </>
     );

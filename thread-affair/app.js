@@ -86,7 +86,9 @@ class NewsletterForm extends React.Component {
 
 const newsletterContainer = document.querySelector('.home-newsletter');
 // React recipe?
-ReactDOM.render(<NewsletterForm></NewsletterForm>, newsletterContainer);
+ReactDOM.createRoot(newsletterContainer).render(
+  <NewsletterForm></NewsletterForm>,
+);
 
 class AddToCartButton extends React.Component {
   state = {
@@ -195,9 +197,8 @@ class ProductControls extends React.Component {
 
 const productTileControls = document.querySelectorAll('.product-tile-controls');
 productTileControls.forEach((productTileControl, index) => {
-  ReactDOM.render(
+  ReactDOM.createRoot(productTileControl).render(
     <ProductControls productId={index}></ProductControls>,
-    productTileControl,
   );
 });
 
