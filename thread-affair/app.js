@@ -1,5 +1,7 @@
 const ADD_TO_CART_EVENT = 'cart/productAdded';
 const REMOVE_FROM_CART_EVENT = 'cart/productRemoved';
+const ADD_TO_WISHLIST_EVENT = 'wl/productAdded';
+const REMOVE_FROM_WISHLIST_EVENT = 'wl/productRemoved';
 
 class NewsletterForm extends React.Component {
   state = {
@@ -157,6 +159,17 @@ const AddToWishlistButton = ({ productId }) => {
 
     setTimeout(() => {
       // dispatch event
+      // aici 9
+      const newEvent = new CustomEvent(
+        actualState.added ? REMOVE_FROM_WISHLIST_EVENT : ADD_TO_WISHLIST_EVENT,
+        {
+          detail: {
+            productId,
+          },
+        },
+      );
+
+      dispatchEvent(newEvent);
 
       setState({
         added: !actualState.added,
@@ -182,15 +195,19 @@ const AddToWishlistButton = ({ productId }) => {
 
 class ProductControls extends React.Component {
   render() {
+    const productId = this.props.productId;
+
+    // study 1
+    const WrappedButton = ({ productId }) => {
+      return <AddToCartButton productId={productId}></AddToCartButton>;
+    };
+
+    // study 2
+    const X = AddToWishlistButton;
+
     return [
-      <AddToCartButton
-        key="cart"
-        productId={this.props.productId}
-      ></AddToCartButton>,
-      <AddToWishlistButton
-        key="wl"
-        productId={this.props.productId}
-      ></AddToWishlistButton>,
+      <WrappedButton productId={productId} key="cart"></WrappedButton>,
+      <X key="wl" productId={this.props.productId}></X>,
     ];
   }
 }
@@ -206,41 +223,85 @@ class HeaderCounters extends React.Component {
   state = {
     cartItemsCount: 0,
     cartItems: [],
+    // de aici1
+    wishlistItemsCount: 0,
+    wishlistItems: [],
+  };
+  // de aici2
+  productCartAction = (event) => {
+    const { productId } = event.detail;
+    const cartItems = this.state.cartItems.slice();
+    // named destructure
+    const { type: eventType } = event;
+
+    switch (eventType) {
+      case ADD_TO_CART_EVENT:
+        cartItems.push(productId);
+        this.setState({
+          cartItems,
+          cartItemsCount: this.state.cartItemsCount + 1,
+        });
+        break;
+
+      case REMOVE_FROM_CART_EVENT:
+        // filter clones as well
+        this.setState({
+          cartItems: cartItems.filter((item) => {
+            return item !== productId;
+          }),
+          cartItemsCount: this.state.cartItemsCount - 1,
+        });
+        break;
+    }
+  };
+  // aici6
+  productWishlistAction = (event) => {
+    const productId = event.detail.productId;
+    const eventType = event.type;
+
+    switch (eventType) {
+      case ADD_TO_WISHLIST_EVENT:
+        const newProductIds =
+          this.state.wishlistItems.length === 0
+            ? [productId]
+            : [...this.state.wishlistItems, productId];
+
+        this.setState({
+          wishlistItems: newProductIds,
+          wishlistItemsCount: this.state.wishlistItemsCount + 1,
+        });
+        break;
+    }
   };
 
   componentDidMount() {
-    addEventListener(ADD_TO_CART_EVENT, (event) => {
-      const productId = event.detail.productId;
-      // slice will clone the array
-      const cartItems = this.state.cartItems.slice();
-      cartItems.push(productId);
+    // aici3
+    addEventListener(ADD_TO_CART_EVENT, this.productCartAction);
+    addEventListener(REMOVE_FROM_CART_EVENT, this.productCartAction);
 
-      this.setState({
-        cartItemsCount: cartItems.length,
-        cartItems,
-      });
-    });
+    // aici7
+    addEventListener(ADD_TO_WISHLIST_EVENT, this.productWishlistAction);
+    addEventListener(REMOVE_FROM_WISHLIST_EVENT, this.productWishlistAction);
+  }
+  // nu trebuie facut in monochrome
+  componentWillUnmount() {
+    removeEventListener(ADD_TO_CART_EVENT, this.productCartAction);
+    removeEventListener(REMOVE_FROM_CART_EVENT, this.productCartAction);
 
-    addEventListener(REMOVE_FROM_CART_EVENT, (event) => {
-      const productId = event.detail.productId;
-      const cartItems = this.state.cartItems.filter((cartItem) => {
-        return productId !== cartItem;
-      });
-
-      this.setState({
-        cartItemsCount: cartItems.length,
-        cartItems,
-      });
-    });
+    removeEventListener(ADD_TO_WISHLIST_EVENT, this.productWishlistAction);
+    removeEventListener(REMOVE_FROM_WISHLIST_EVENT, this.productWishlistAction);
   }
 
-  showProducts = () => {
-    let message = '';
+  // aici10
 
-    if (this.state.cartItems.length <= 0) {
-      message = 'There are no products in your cart';
+  // aici 4
+  showProducts = (collectionName, displayName) => {
+    let message = '';
+    // dynamic acces with bracket notation
+    if (this.state[collectionName].length <= 0) {
+      message = `There are no products in your ${displayName}.`;
     } else {
-      message = `These are the pids in your cart: ${this.state.cartItems}`;
+      message = `These are the pids in your ${displayName}: ${this.state[collectionName]}`;
     }
 
     alert(message);
@@ -249,12 +310,25 @@ class HeaderCounters extends React.Component {
   render() {
     return (
       <>
-        <div className="header-counter" onClick={this.showProducts}>
-          <span className="qty">{this.state.cartItemsCount}</span>
+        <div
+          className="header-counter"
+          onClick={() => {
+            // aici5
+            this.showProducts('wishlistItems', 'wishlist');
+          }}
+        >
+          {/* aici8 */}
+          <span className="qty">{this.state.wishlistItemsCount}</span>
           <i className="fas fa-heart icon"></i>
         </div>
 
-        <div className="header-counter" onClick={this.showProducts}>
+        <div
+          className="header-counter"
+          onClick={() => {
+            // aici5
+            this.showProducts('cartItems', 'cart');
+          }}
+        >
           <span className="qty">{this.state.cartItemsCount}</span>
           <i className="fas fa-shopping-cart icon"></i>
         </div>
@@ -262,7 +336,31 @@ class HeaderCounters extends React.Component {
     );
   }
 }
+// not necessary for monochrome
+// aici10
+class HCWrapper extends React.Component {
+  state = {
+    visible: true,
+  };
+
+  onClick = () => {
+    this.setState({
+      visible: !this.state.visible,
+    });
+  };
+
+  render() {
+    return (
+      <>
+        <button title="title" onClick={this.onClick}>
+          Toggle
+        </button>
+        {this.state.visible ? <HeaderCounters></HeaderCounters> : ''}
+      </>
+    );
+  }
+}
 
 const headerCounters = document.querySelector('.header-counters');
 // the good way
-ReactDOM.createRoot(headerCounters).render(<HeaderCounters></HeaderCounters>);
+ReactDOM.createRoot(headerCounters).render(<HCWrapper></HCWrapper>);
