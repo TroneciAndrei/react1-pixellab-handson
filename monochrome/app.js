@@ -1,5 +1,7 @@
 const ADD_TO_CART_EVENT = 'cart/productAdded';
 const REMOVE_FROM_CART_EVENT = 'cart/productRemoved';
+const ADD_TO_WISHLIST_EVENT = 'wl/productAdded';
+const REMOVE_FROM_WISHLIST_EVENT = 'wl/productRemoved';
 
 class NewsletterForm extends React.Component {
   state = {
@@ -90,7 +92,6 @@ class AddToCartButton extends React.Component {
 
   onClick = (event) => {
     event.preventDefault();
-
     this.setState({
       busy: true,
     });
@@ -153,6 +154,16 @@ const AddToWishlistButton = ({ productId }) => {
 
     setTimeout(() => {
       // dispatch event
+      const newEvent = new CustomEvent(
+        actualState.added ? REMOVE_FROM_WISHLIST_EVENT : ADD_TO_WISHLIST_EVENT,
+        {
+          detail: {
+            productId,
+          },
+        },
+      );
+
+      dispatchEvent(newEvent);
 
       setState({
         added: !actualState.added,
@@ -204,41 +215,70 @@ class HeaderCounters extends React.Component {
   state = {
     cartItemsCount: 0,
     cartItems: [],
+    wishlistItemsCount: 0,
+    wishlistItems: [],
+  };
+
+  productCartAction = (event) => {
+    const { productId } = event.detail;
+    const cartItems = this.state.cartItems.slice();
+    // named destructure
+    const { type: eventType } = event;
+
+    switch (eventType) {
+      case ADD_TO_CART_EVENT:
+        cartItems.push(productId);
+        this.setState({
+          cartItems,
+          cartItemsCount: this.state.cartItemsCount + 1,
+        });
+        break;
+
+      case REMOVE_FROM_CART_EVENT:
+        // filter clones as well
+        this.setState({
+          cartItems: cartItems.filter((item) => {
+            return item !== productId;
+          }),
+          cartItemsCount: this.state.cartItemsCount - 1,
+        });
+        break;
+    }
+  };
+  productWishlistAction = (event) => {
+    const productId = event.detail.productId;
+    const eventType = event.type;
+
+    switch (eventType) {
+      case ADD_TO_WISHLIST_EVENT:
+        const newProductIds =
+          this.state.wishlistItems.length === 0
+            ? [productId]
+            : [...this.state.wishlistItems, productId];
+
+        this.setState({
+          wishlistItems: newProductIds,
+          wishlistItemsCount: this.state.wishlistItemsCount + 1,
+        });
+        break;
+    }
   };
 
   componentDidMount() {
-    addEventListener(ADD_TO_CART_EVENT, (event) => {
-      const productId = event.detail.productId;
-      // slice will clone the array
-      const cartItems = this.state.cartItems.slice();
-      cartItems.push(productId);
+    addEventListener(ADD_TO_CART_EVENT, this.productCartAction);
+    addEventListener(REMOVE_FROM_CART_EVENT, this.productCartAction);
 
-      this.setState({
-        cartItemsCount: cartItems.length,
-        cartItems,
-      });
-    });
-
-    addEventListener(REMOVE_FROM_CART_EVENT, (event) => {
-      const productId = event.detail.productId;
-      const cartItems = this.state.cartItems.filter((cartItem) => {
-        return productId !== cartItem;
-      });
-
-      this.setState({
-        cartItemsCount: cartItems.length,
-        cartItems,
-      });
-    });
+    addEventListener(ADD_TO_WISHLIST_EVENT, this.productWishlistAction);
+    addEventListener(REMOVE_FROM_WISHLIST_EVENT, this.productWishlistAction);
   }
 
-  showProducts = () => {
+  showProducts = (collectionName, displayName) => {
     let message = '';
-
-    if (this.state.cartItems.length <= 0) {
-      message = 'There are no products in your cart';
+    // dynamic acces with bracket notation
+    if (this.state[collectionName].length <= 0) {
+      message = `There are no products in your ${displayName}.`;
     } else {
-      message = `These are the pids in your cart: ${this.state.cartItems}`;
+      message = `These are the pids in your ${displayName}: ${this.state[collectionName]}`;
     }
 
     alert(message);
@@ -247,11 +287,25 @@ class HeaderCounters extends React.Component {
   render() {
     return (
       <>
-        <a href="http://" title="Saved Items" onClick={this.showProducts}>
-          {this.state.cartItemsCount} <i className="far fa-heart"></i>
+        <a
+          href="http://"
+          title="Saved Items"
+          onClick={() => {
+            // aici5
+            this.showProducts('wishlistItems', 'wishlist');
+          }}
+        >
+          {this.state.wishlistItemsCount} <i className="far fa-heart"></i>
         </a>
 
-        <a href="http://" title="Cart" onClick={this.showProducts}>
+        <a
+          href="http://"
+          title="Cart"
+          onClick={() => {
+            // aici5
+            this.showProducts('cartItems', 'cart');
+          }}
+        >
           {this.state.cartItemsCount} <i className="fas fa-shopping-bag"></i>
         </a>
       </>
