@@ -39,15 +39,38 @@
     </div>
   </nav>
 
-  <header class="">
+  <header class="border-btoom py-3 mb-4">
+    <div class="container d-flex justify-content-center flex-wrap">
+      <h1 class="fs-4 mb-3 mb-lg-0 me-lg-auto text-dark">Contact Manager</h1>
 
+      <form class="d-flex w-75 mb-3 mb-lg-0 search-form">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search..."
+          name="q"
+        >
+
+        <button
+          type="submit"
+          class="btn btn-primary ms-2"
+          title="Search"
+        >Search</button>
+
+      </form>
+    </div>
   </header>
 
-  <main>
+  <main class="container">
+    <div class="mb-4 notification-bar"></div>
 
+    <div class="stage"></div>
   </main>
 
-  <script src="app.js"></script>
+  <script
+    src="app.js"
+    type="module"
+  ></script>
 </body>
 
 </html>

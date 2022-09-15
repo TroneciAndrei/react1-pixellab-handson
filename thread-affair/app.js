@@ -271,6 +271,15 @@ class HeaderCounters extends React.Component {
           wishlistItemsCount: this.state.wishlistItemsCount + 1,
         });
         break;
+
+      case REMOVE_FROM_WISHLIST_EVENT:
+        this.setState({
+          wishlistItems: this.state.wishlistItems.filter((item) => {
+            return item !== productId;
+          }),
+          wishlistItemsCount: this.state.wishlistItemsCount - 1,
+        });
+        break;
     }
   };
 
