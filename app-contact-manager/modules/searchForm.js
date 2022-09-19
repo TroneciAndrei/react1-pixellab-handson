@@ -16,13 +16,17 @@ searchForm.addEventListener('submit', (event) => {
 
   clearMessages();
 
-  const contacts = findContact(queryInput.value.toLowerCase());
+  const contacts = findContact(queryInput.value.toLowerCase().trim());
   const contactsCount = contacts.length;
   const fragment = new DocumentFragment();
 
   contacts.forEach((contact) => {
     fragment.append(renderContact(contact));
   });
+
+  if (queryInput.value.length < 3) {
+    return;
+  }
 
   if (contacts.length <= 0) {
     addMessage(render('No contacts found.', 'warning'));

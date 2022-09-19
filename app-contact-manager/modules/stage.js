@@ -23,8 +23,11 @@ stage.addEventListener('click', (event) => {
 
   deleteContact(contactId);
   // confirm delete
+  const confirmMessage = confirm('Are you sure?');
 
-  parent.remove();
+  if (confirmMessage) {
+    parent.remove();
+  }
 
   addMessage(renderMessage('Contact removed', 'success'));
 });
