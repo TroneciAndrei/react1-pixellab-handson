@@ -29,7 +29,12 @@ searchForm.addEventListener('submit', (event) => {
   }
 
   if (contacts.length <= 0) {
-    addMessage(render('No contacts found.', 'warning'));
+    addMessage(
+      render(
+        `No contacts found. Search term incorrect: '${queryInput.value}'`,
+        'warning',
+      ),
+    );
   } else {
     const petsCount = contacts.reduce((petsCount, contact) => {
       const { pets = [] } = contact;
@@ -50,7 +55,7 @@ searchForm.addEventListener('submit', (event) => {
                 one: 'pet',
                 many: 'pets',
               })
-        }.`,
+        }. Search term was: '${queryInput.value}'`,
         'success',
       ),
     );
