@@ -48,3 +48,19 @@ export const getContact = (contactId) => {
     return id === contactId;
   });
 };
+
+export const addContact = (contact) => {
+  contacts.push(contact);
+};
+
+export const editContact = (contact) => {
+  const existingContact = getContact(contact.id);
+
+  const contactProperties = Object.keys(existingContact);
+
+  for (let i = 0; i < contactProperties.length; i++) {
+    const propertyName = contactProperties[i];
+
+    existingContact[propertyName] = contact[propertyName];
+  }
+};

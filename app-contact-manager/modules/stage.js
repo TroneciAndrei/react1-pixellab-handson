@@ -1,5 +1,10 @@
 import { addMessage, clearMessages } from './notificationBar.js';
-import { deleteContact, getContact } from './querry.js';
+import {
+  addContact,
+  deleteContact,
+  editContact,
+  getContact,
+} from './querry.js';
 import renderMessage from './message.js';
 import { render as renderEditContact } from './editContact.js';
 
@@ -34,6 +39,7 @@ stage.addEventListener('click', (event) => {
 
 // edit contact
 stage.addEventListener('click', (event) => {
+  event.preventDefault();
   const { target } = event;
 
   if (
@@ -71,6 +77,53 @@ stage.addEventListener('click', (event) => {
   stage.innerHTML = '';
 });
 
-// save edit contact button
+// add contact button
+stage.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const { target } = event;
+  if (target.nodeName !== 'FORM' || !target.classList.contains('add-contact')) {
+    return;
+  }
+
+  const { name, surname, phone, email } = form;
+  const contact = {
+    name: name.value,
+    surname: surname.value,
+    phone: phone.value,
+    email: email.value,
+    id: Number(Date.now().toString().slice(-6)),
+  };
+
+  addContact(contact);
+
+  addMessage(
+    renderMessage(`Contact ${name.value} ${surname.value} created.`, 'success'),
+  );
+  stage.innerHTML = '';
+});
+// save edit contact
+stage.addEventListener('click', (event) => {
+  event.preventDefault();
+  const { target } = event;
+
+  if (
+    target.nodeName !== 'FORM' ||
+    !target.classList.contains('edit-contact')
+  ) {
+    return;
+  }
+
+  const form = target;
+  const { name, surname, phone, email, id } = form;
+  const contact = {
+    name: name.value,
+    surname: surname.value,
+    phone: phone.value,
+    email: email.value,
+    id: Number(id.value),
+  };
+
+  editContact(contact);
+});
 
 export default stage;
