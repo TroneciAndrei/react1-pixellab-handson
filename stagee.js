@@ -6,7 +6,7 @@ import {
   deletePet,
   editContact,
   getContact,
-} from './querry.js';
+} from './query.js';
 import renderMessage from './message.js';
 import { render as renderEditContact } from './editContact.js';
 import { render as renderAddPet } from './addPet.js';
