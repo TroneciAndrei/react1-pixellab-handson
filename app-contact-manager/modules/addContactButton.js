@@ -1,15 +1,15 @@
 import { render } from './addContact.js';
 import { clearMessages } from './notificationBar.js';
 // default exports can be renamed as we please
-import tazz from './stage.js';
+import addContact from './stage.js';
 
 const addContactButton = document.querySelector('.add-contact-button');
 
 addContactButton.addEventListener('click', (event) => {
   clearMessages();
-  tazz.innerHTML = '';
+  addContact.innerHTML = '';
 
-  tazz.append(render());
+  addContact.append(render());
 });
 
 export default addContactButton;
