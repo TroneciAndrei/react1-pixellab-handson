@@ -4,7 +4,7 @@ export const render = (pet) => {
   container.classList.add('edit-pet');
 
   container.innerHTML = `
-    <h4>Editing contact ${name} ${species}</h4>
+    <h4>Editing pet ${name} species ${species}</h4>
     <label class="form-label mt-2">Name</label>
     <input type="text"
       name="name"

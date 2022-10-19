@@ -68,6 +68,18 @@ export const editContact = (contact) => {
   }
 };
 
+export const editPet = (pet) => {
+  const existingPet = getContact(pet.id);
+
+  const petProperties = Object.keys(existingPet);
+
+  for (let i = 0; i < petProperties.length; i++) {
+    const propertyName = petProperties[i];
+
+    existingPet[propertyName] = pet[propertyName];
+  }
+};
+
 // add pet
 export const addPet = (contactId, pet) => {
   const contact = getContact(contactId);

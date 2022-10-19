@@ -11,6 +11,7 @@ import renderMessage from './message.js';
 import { render as renderEditContact } from './editContact.js';
 import { render as renderAddPet } from './addPet.js';
 import { clearStage } from './clearStage.js';
+import { render as renderEditPet } from './editPet.js';
 
 const stage = document.querySelector('.stage');
 
@@ -65,6 +66,31 @@ stage.addEventListener('click', (event) => {
   clearMessages();
   clearStage(stage);
   stage.append(renderEditContact(contact));
+});
+
+// edit pet
+stage.addEventListener('click', (event) => {
+  const { target } = event;
+
+  if (
+    target.nodeName !== 'BUTTON' ||
+    !target.classList.contains('edit-pet-button')
+  ) {
+    return;
+  }
+
+  const button = target;
+  const parent = button.parentElement;
+  const petId = parent.dataset.petId;
+  const pet = getContact(petId);
+
+  if (!pet) {
+    return;
+  }
+
+  clearMessages();
+  clearStage(stage);
+  stage.append(renderEditPet(pet));
 });
 
 // cancel button
@@ -200,7 +226,7 @@ stage.addEventListener('click', (event) => {
   }
 
   const button = target;
-  const container = button.closest('.pet');
+  const container = button.closest('.pet-container');
   const petId = Number(container.dataset.petId);
   const contactContainer = button.closest('.contact');
   const contactId = contactContainer.dataset.contactId;
@@ -208,6 +234,7 @@ stage.addEventListener('click', (event) => {
   deletePet(contactId, petId);
 
   container.remove();
+  addMessage(renderMessage('Pet removed', 'danger'));
 });
 
 export default stage;

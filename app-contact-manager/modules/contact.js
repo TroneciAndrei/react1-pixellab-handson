@@ -27,6 +27,7 @@ export const render = (contact) => {
   `;
 
   const petUl = document.createElement('ul');
+  petUl.classList.add('pet-container');
 
   pets.forEach((pet) => {
     const renderedPet = renderPet(pet);
