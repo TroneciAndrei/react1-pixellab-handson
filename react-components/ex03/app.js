@@ -59,3 +59,41 @@ const sentences = values1.map(({ name, age }) => {
 });
 
 console.log(sentences.toString());
+
+console.warn(
+  `Prin aceeasi metoda, afiseaza o lista cu numele complet al prietenilor. `,
+);
+Object.values(person.friends).forEach(({ name, surname }) => {
+  console.log(`${name} ${surname}`);
+});
+
+console.warn(
+  `Afiseaza propozitia: “Prietenii mei sunt Larry Larryson, Steven Stevenson si Carol Carolson.” folosind Object.values()`,
+);
+
+console.log(
+  Object.values(person.friends).reduce(
+    (carry, { name, surname }, index, friends) => {
+      let punctuation = ', ';
+      punctuation = friends.length - 1 === index ? '.' : punctuation;
+      punctuation = friends.length - 2 === index ? ' si ' : punctuation;
+
+      carry += `${name} ${surname}${punctuation}`;
+
+      return carry;
+    },
+    'Prietenii mei sunt ',
+  ),
+);
+
+console.warn(
+  `In mod similar, afiseaza propozitia  “Larry are xx ani. Steven are …”`,
+);
+
+console.log(
+  Object.values(person.friends)
+    .map(({ name, age }) => {
+      return `${name} are ${age} ani.`;
+    })
+    .toString(),
+);
